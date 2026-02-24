@@ -1,59 +1,180 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Foodpanda App - SSO Client
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Food delivery platform with Single Sign-On (SSO) authentication. Part of the Multi-Login System.
 
-## About Laravel
+## 🏗️ Architecture
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+```
+┌─────────────────┐     ┌─────────────────┐
+│  Foodpanda App  │◄───►│   Auth Server   │
+│  (This App)     │     │  (Port 8000)    │
+└─────────────────┘     └─────────────────┘
+```
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## ✨ Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- SSO Authentication (login once, access all apps)
+- Restaurant listings
+- Food menu browsing
+- Order management
+- User dashboard
 
-## Learning Laravel
+## 📋 Requirements
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+- PHP 8.2+
+- Composer
+- MySQL or SQLite
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 🚀 Installation
 
-## Laravel Sponsors
+### Step 1: Clone Repository
+```bash
+git clone <repository-url>
+cd foodpanda-app
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Step 2: Install Dependencies
+```bash
+composer install
+```
 
-### Premium Partners
+### Step 3: Environment Setup
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### Step 4: Configure `.env`
 
-## Contributing
+#### For Local Development:
+```env
+APP_NAME="Foodpanda App"
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost:8002
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=foodpanda_app
+DB_USERNAME=root
+DB_PASSWORD=
 
-## Code of Conduct
+SESSION_DRIVER=database
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# SSO Configuration (MUST match Auth Server!)
+SSO_AUTH_SERVER_URL=http://localhost:8000
+SSO_CLIENT_ID=foodpanda
+SSO_CLIENT_SECRET=foodpanda-secret-key
+SSO_JWT_SECRET=sso-super-secret-key-change-in-production-2024
+```
 
-## Security Vulnerabilities
+#### For Production:
+```env
+APP_NAME="Foodpanda App"
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://your-foodpanda-app.com
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+DB_CONNECTION=mysql
+DB_HOST=your-db-host
+DB_PORT=3306
+DB_DATABASE=your_database
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
 
-## License
+SESSION_DRIVER=database
+SESSION_SECURE_COOKIE=true
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# SSO Configuration (IMPORTANT - Point to LIVE Auth Server!)
+SSO_AUTH_SERVER_URL=https://your-auth-server.com
+SSO_CLIENT_ID=foodpanda
+SSO_CLIENT_SECRET=foodpanda-secret-key
+SSO_JWT_SECRET=same-secret-as-auth-server
+```
+
+### Step 5: Run Migrations
+```bash
+php artisan migrate
+```
+
+### Step 6: Start Server
+```bash
+php artisan serve --port=8002
+```
+
+## 🔄 SSO Flow
+
+1. User clicks "Login with SSO"
+2. Redirects to Auth Server
+3. If already logged in (from Ecommerce), auto-authenticates!
+4. Returns JWT token to this app
+5. App validates token & logs user in
+
+## 📡 Routes
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/` | Home page |
+| GET | `/restaurants` | Restaurant listing |
+| GET | `/login` | Redirect to SSO |
+| GET | `/sso/callback` | Handle SSO callback |
+| POST | `/logout` | Logout |
+| GET | `/dashboard` | User dashboard (protected) |
+| GET | `/menu/{id}` | Restaurant menu (protected) |
+| GET | `/orders` | User orders (protected) |
+
+## 📁 File Structure
+
+```
+foodpanda-app/
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   ├── SsoController.php
+│   │   │   └── FoodpandaController.php
+│   │   └── Middleware/SsoAuthenticate.php
+│   ├── Models/User.php
+│   └── Services/SsoService.php
+├── config/sso.php
+├── routes/web.php
+└── resources/views/
+```
+
+## 🔧 Troubleshooting
+
+### Clear Cache (after .env changes)
+```bash
+php artisan config:clear
+php artisan cache:clear
+```
+
+### Common Issues
+
+| Issue | Solution |
+|-------|----------|
+| "No token received" | Check `SSO_AUTH_SERVER_URL` points to correct auth server |
+| "Invalid token" | Ensure `SSO_JWT_SECRET` matches auth server |
+| Auto-login not working | Make sure you're using same browser (cookies) |
+
+## ⚠️ Important Notes
+
+1. **SSO_AUTH_SERVER_URL** must point to your Auth Server
+   - Local: `http://localhost:8000`
+   - Production: `https://your-auth-server.com`
+
+2. **SSO_JWT_SECRET** must be IDENTICAL on all 3 apps
+
+3. Run `php artisan config:clear` after changing `.env`
+
+## 🧪 Testing SSO
+
+1. Start all 3 servers (Auth: 8000, Ecommerce: 8001, Foodpanda: 8002)
+2. Go to `http://localhost:8001` (Ecommerce)
+3. Click "Login with SSO" → Login with demo credentials
+4. Go to `http://localhost:8002` (Foodpanda)
+5. Click "Login with SSO" → Should auto-login without password!
+
+## 📄 License
+
+MIT License
